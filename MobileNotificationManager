@@ -1,0 +1,233 @@
+using Unity.Notifications.Android;
+using UnityEngine;
+using System;
+
+public class MobileNotificationManager : MonoBehaviour
+{
+    Cat cat;
+    private bool ChannelReady = false;
+
+    private int hungerNotifID;
+    private int poopNotifID;
+    private int peeNotifID;
+    private int playNotifID;
+    private int drinkNotifID;
+
+    public AndroidNotificationChannel defaultNotificationChannel;
+
+    private void Start()
+    {
+        cat = FindObjectOfType<Cat>();
+
+        if(!ChannelReady)
+        {
+            SetupNotifChannel();
+        }
+    }
+
+    private void OnApplicationPause(bool pause)
+    {
+        
+        SetHungerNotification();
+        SetPoopNotification();
+        SetPeeNotification();
+        SetPlayNotification();
+        SetDrinkNotification();
+    }
+
+    private void SetupNotifChannel()
+    {
+        defaultNotificationChannel = new AndroidNotificationChannel()
+        {
+            Id = "default_channel",
+            Name = "Default Channel",
+            Description = "For Generic notifications",
+            Importance = Importance.Default,
+        };
+
+        AndroidNotificationCenter.RegisterNotificationChannel(defaultNotificationChannel);
+
+        ChannelReady = true;
+
+    }
+
+    private void SetHungerNotification()
+    {
+
+        switch (AndroidNotificationCenter.CheckScheduledNotificationStatus(hungerNotifID))
+        {
+            case NotificationStatus.Unknown:
+                AndroidNotificationCenter.SendNotification(BuildHungerNotif(), "default_channel");
+                break;
+
+            case NotificationStatus.Scheduled:
+                AndroidNotificationCenter.UpdateScheduledNotification(hungerNotifID, BuildHungerNotif(), "default_channel");
+                break;
+
+            case NotificationStatus.Delivered:
+                AndroidNotificationCenter.CancelNotification(hungerNotifID);
+                break;
+
+        }
+    }
+
+    private void SetPoopNotification()
+    {
+        switch (AndroidNotificationCenter.CheckScheduledNotificationStatus(poopNotifID))
+        {
+            case NotificationStatus.Unknown:
+                AndroidNotificationCenter.SendNotification(BuildPoopNotif(), "default_channel");
+                break;
+
+            case NotificationStatus.Scheduled:
+                AndroidNotificationCenter.UpdateScheduledNotification(poopNotifID, BuildPoopNotif(), "default_channel");
+                break;
+
+            case NotificationStatus.Delivered:
+                AndroidNotificationCenter.CancelNotification(poopNotifID);
+                break;
+        }
+    }
+
+    private void SetPeeNotification()
+    {
+        switch (AndroidNotificationCenter.CheckScheduledNotificationStatus(peeNotifID))
+        {
+            case NotificationStatus.Unknown:
+                AndroidNotificationCenter.SendNotification(BuildPeeNotif(), "default_channel");
+                break;
+
+            case NotificationStatus.Scheduled:
+                AndroidNotificationCenter.UpdateScheduledNotification(peeNotifID, BuildPeeNotif(), "default_channel");
+                break;
+
+            case NotificationStatus.Delivered:
+                AndroidNotificationCenter.CancelNotification(peeNotifID);
+                break;
+        }
+    }
+
+    private void SetPlayNotification()
+    {
+        switch (AndroidNotificationCenter.CheckScheduledNotificationStatus(playNotifID))
+        {
+            case NotificationStatus.Unknown:
+                AndroidNotificationCenter.SendNotification(BuildPlayNotif(), "default_channel");
+                break;
+
+            case NotificationStatus.Scheduled:
+                AndroidNotificationCenter.UpdateScheduledNotification(playNotifID, BuildPlayNotif(), "default_channel");
+                break;
+
+            case NotificationStatus.Delivered:
+                AndroidNotificationCenter.CancelNotification(playNotifID);
+                break;
+        }
+    }
+
+    private void SetDrinkNotification()
+    {
+        switch (AndroidNotificationCenter.CheckScheduledNotificationStatus(drinkNotifID))
+        {
+            case NotificationStatus.Unknown:
+                AndroidNotificationCenter.SendNotification(BuildDrinkNotif(), "default_channel");
+                break;
+
+            case NotificationStatus.Scheduled:
+                AndroidNotificationCenter.UpdateScheduledNotification(drinkNotifID, BuildDrinkNotif(), "default_channel");
+                break;
+
+            case NotificationStatus.Delivered:
+                AndroidNotificationCenter.CancelNotification(drinkNotifID);
+                break;
+        }
+    }
+    private AndroidNotification BuildHungerNotif()
+    {
+        AndroidNotification hungerNotif = new AndroidNotification()
+        {
+
+            Title = "Your Cat Is Hungry",
+            Text = "Hey, I'm Hungry",
+            SmallIcon = "app_icon",
+            LargeIcon = "default",
+            FireTime = System.DateTime.Today.AddHours(6),
+            RepeatInterval = new TimeSpan(8, 0, 0),
+            GroupAlertBehaviour = GroupAlertBehaviours.GroupAlertAll,
+            IntentData = "TestingHungerIntentData"
+
+        };
+        return hungerNotif;
+    }
+
+    private AndroidNotification BuildPoopNotif()
+    {
+        AndroidNotification poopNotif = new AndroidNotification()
+        {
+
+            Title = "Your Cat wanna poop",
+            Text = "i wanna poop",
+            SmallIcon = "app_icon",
+            LargeIcon = "default",
+            FireTime = DateTime.Today.AddHours(6).AddMinutes(cat.poopMinute),
+            GroupAlertBehaviour = GroupAlertBehaviours.GroupAlertAll,
+            IntentData = "TestingPoopIntentData"
+
+        };
+        return poopNotif;
+    }
+
+    private AndroidNotification BuildPeeNotif()
+    {
+        AndroidNotification peeNotif = new AndroidNotification()
+        {
+
+            Title = "Your Cat wanna Pee",
+            Text = "I wanna pee",
+            SmallIcon = "app_icon",
+            LargeIcon = "default",
+            FireTime = DateTime.Today.AddHours(6).AddMinutes(cat.peeMinute),
+            RepeatInterval = new TimeSpan(7, 0, 0),
+            GroupAlertBehaviour = GroupAlertBehaviours.GroupAlertAll,
+            IntentData = "TestingPeeIntentData"
+
+        };
+        return peeNotif;
+    }
+
+    private AndroidNotification BuildPlayNotif()
+    {
+        AndroidNotification playNotif = new AndroidNotification()
+        {
+
+            Title = "Your Cat wanna play",
+            Text = "Lets Play!",
+            SmallIcon = "app_icon",
+            LargeIcon = "default",
+            FireTime = DateTime.Today.AddHours(7),
+            RepeatInterval = new TimeSpan(12,0,0),
+            GroupAlertBehaviour = GroupAlertBehaviours.GroupAlertAll,
+            IntentData = "TestingPlayIntentData"
+
+        };
+        return playNotif;
+    }
+
+    private AndroidNotification BuildDrinkNotif()
+    {
+        AndroidNotification drinkNotif = new AndroidNotification()
+        {
+
+            Title = "Your cat is thirsty",
+            Text = "i am thirsty",
+            SmallIcon = "app_icon",
+            LargeIcon = "default",
+            FireTime = DateTime.Today.AddHours(14).AddMinutes(cat.thristyMinute),
+            GroupAlertBehaviour = GroupAlertBehaviours.GroupAlertAll,
+            IntentData = "TestingDrinkIntentData"
+
+        };
+        return drinkNotif;
+    }
+
+}
